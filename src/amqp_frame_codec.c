@@ -129,12 +129,11 @@ static void frame_received(void* context, const unsigned char* type_specific, ui
     }
 }
 
-static int encode_bytes(void* context, const unsigned char* bytes, size_t length)
+static void encode_bytes(void* context, const unsigned char* bytes, size_t length)
 {
     PAYLOAD* payload = (PAYLOAD*)context;
     (void)memcpy((unsigned char*)payload->bytes + payload->length, bytes, length);
     payload->length += length;
-    return 0;
 }
 
 /* Codes_SRS_AMQP_FRAME_CODEC_01_011: [amqp_frame_codec_create shall create an instance of an amqp_frame_codec and return a non-NULL handle to it.] */

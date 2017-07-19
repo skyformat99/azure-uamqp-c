@@ -142,12 +142,11 @@ static void frame_received(void* context, const unsigned char* type_specific, ui
     }
 }
 
-static int encode_bytes(void* context, const unsigned char* bytes, size_t length)
+static void encode_bytes(void* context, const unsigned char* bytes, size_t length)
 {
     PAYLOAD* payload = (PAYLOAD*)context;
     (void)memcpy((unsigned char*)payload->bytes + payload->length, bytes, length);
     payload->length += length;
-    return 0;
 }
 
 SASL_FRAME_CODEC_HANDLE sasl_frame_codec_create(FRAME_CODEC_HANDLE frame_codec, ON_SASL_FRAME_RECEIVED on_sasl_frame_received, ON_SASL_FRAME_CODEC_ERROR on_sasl_frame_codec_error, void* callback_context)

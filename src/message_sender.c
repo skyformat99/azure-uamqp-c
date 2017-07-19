@@ -138,12 +138,11 @@ static void on_delivery_settled(void* context, delivery_number delivery_no, LINK
     remove_pending_message(message_sender_instance, message_with_callback);
 }
 
-static int encode_bytes(void* context, const unsigned char* bytes, size_t length)
+static void encode_bytes(void* context, const unsigned char* bytes, size_t length)
 {
     PAYLOAD* payload = (PAYLOAD*)context;
     (void)memcpy((unsigned char*)payload->bytes + payload->length, bytes, length);
     payload->length += length;
-    return 0;
 }
 
 static void log_message_chunk(MESSAGE_SENDER_INSTANCE* message_sender_instance, const char* name, AMQP_VALUE value)
