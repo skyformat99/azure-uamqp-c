@@ -2210,6 +2210,11 @@ static void encode_boolean(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* contex
     }
 }
 
+static size_t get_encoded_size_boolean(void)
+{
+    return 1;
+}
+
 static void encode_ubyte(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, unsigned char value)
 {
     unsigned char bytes[2];
@@ -2218,6 +2223,11 @@ static void encode_ubyte(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context,
 
     /* Codes_SRS_AMQPVALUE_01_275: [<encoding code="0x50" category="fixed" width="1" label="8-bit unsigned integer"/>] */
     output_bytes(encoder_output, context, bytes, sizeof(bytes));
+}
+
+static size_t get_encoded_size_ubyte(void)
+{
+    return 2;
 }
 
 static void encode_ushort(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, uint16_t value)
@@ -2229,6 +2239,11 @@ static void encode_ushort(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context
 
     /* Codes_SRS_AMQPVALUE_01_276: [<encoding code="0x60" category="fixed" width="2" label="16-bit unsigned integer in network byte order"/>] */
     output_bytes(encoder_output, context, bytes, sizeof(bytes));
+}
+
+static size_t get_encoded_size_ushort(void)
+{
+    return 3;
 }
 
 static void encode_uint(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, uint32_t value)
@@ -2261,6 +2276,26 @@ static void encode_uint(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, 
         /* Codes_SRS_AMQPVALUE_01_277: [<encoding code="0x70" category="fixed" width="4" label="32-bit unsigned integer in network byte order"/>] */
         output_bytes(encoder_output, context, bytes, sizeof(bytes));
     }
+}
+
+static size_t get_encoded_size_uint(uint32_t value)
+{
+    size_t result;
+
+    if (value == 0)
+    {
+        result = 1;
+    }
+    else if (value <= 255)
+    {
+        result = 2;
+    }
+    else
+    {
+        result = 5;
+    }
+
+    return result;
 }
 
 static void encode_ulong(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, uint64_t value)
@@ -2299,6 +2334,26 @@ static void encode_ulong(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context,
     }
 }
 
+static size_t get_encoded_size_ulong(uint64_t value)
+{
+    size_t result;
+
+    if (value == 0)
+    {
+        result = 1;
+    }
+    else if (value <= 255)
+    {
+        result = 2;
+    }
+    else
+    {
+        result = 9;
+    }
+
+    return result;
+}
+
 static void encode_byte(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, char value)
 {
     unsigned char bytes[2];
@@ -2307,6 +2362,11 @@ static void encode_byte(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, 
 
     /* Codes_SRS_AMQPVALUE_01_283: [<encoding code="0x51" category="fixed" width="1" label="8-bit two's-complement integer"/>] */
     output_bytes(encoder_output, context, bytes, sizeof(bytes));
+}
+
+static size_t get_encoded_size_byte(void)
+{
+    return 2;
 }
 
 static void encode_short(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, int16_t value)
@@ -2318,6 +2378,11 @@ static void encode_short(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context,
 
     /* Codes_SRS_AMQPVALUE_01_284: [<encoding code="0x61" category="fixed" width="2" label="16-bit two's-complement integer in network byte order"/>] */
     output_bytes(encoder_output, context, bytes, sizeof(bytes));
+}
+
+static size_t get_encoded_size_short(void)
+{
+    return 3;
 }
 
 static void encode_int(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, int32_t value)
@@ -2342,6 +2407,22 @@ static void encode_int(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, i
         /* Codes_SRS_AMQPVALUE_01_285: [<encoding code="0x71" category="fixed" width="4" label="32-bit two's-complement integer in network byte order"/>] */
         output_bytes(encoder_output, context, bytes, sizeof(bytes));
     }
+}
+
+static size_t get_encoded_size_int(int32_t value)
+{
+    size_t result;
+
+    if ((value <= 127) && (value >= -128))
+    {
+        result = 2;
+    }
+    else
+    {
+        result = 5;
+    }
+
+    return result;
 }
 
 static void encode_long(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, int64_t value)
@@ -2373,6 +2454,22 @@ static void encode_long(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, 
     }
 }
 
+static size_t get_encoded_size_long(int64_t value)
+{
+    size_t result;
+
+    if ((value <= 127) && (value >= -128))
+    {
+        result = 2;
+    }
+    else
+    {
+        result = 9;
+    }
+
+    return result;
+}
+
 static void encode_float(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, float value)
 {
     uint32_t value_as_uint32 = *((uint32_t*)(void*)&value);
@@ -2384,6 +2481,11 @@ static void encode_float(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context,
     bytes[4] = value_as_uint32 & 0xFF;
     /* Codes_SRS_AMQPVALUE_01_289: [\<encoding name="ieee-754" code="0x72" category="fixed" width="4" label="IEEE 754-2008 binary32"/>] */
     output_bytes(encoder_output, context, bytes, sizeof(bytes));
+}
+
+static size_t get_encoded_size_float(void)
+{
+    return 5;
 }
 
 static void encode_double(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, double value)
@@ -2404,6 +2506,11 @@ static void encode_double(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context
     output_bytes(encoder_output, context, bytes, sizeof(bytes));
 }
 
+static size_t get_encoded_size_double(void)
+{
+    return 9;
+}
+
 static void encode_timestamp(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, int64_t value)
 {
     unsigned char bytes[9];
@@ -2421,11 +2528,21 @@ static void encode_timestamp(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* cont
     output_bytes(encoder_output, context, bytes, sizeof(bytes));
 }
 
+static size_t get_encoded_size_timestamp(void)
+{
+    return 9;
+}
+
 static void encode_uuid(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, uuid uuid)
 {
     /* Codes_SRS_AMQPVALUE_01_296: [<encoding code="0x98" category="fixed" width="16" label="UUID as defined in section 4.1.2 of RFC-4122"/>] */
     output_byte(encoder_output, context, 0x98);
     output_bytes(encoder_output, context, uuid, 16);
+}
+
+static size_t get_encoded_size_uuid(void)
+{
+    return 17;
 }
 
 static void encode_binary(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, const unsigned char* value, uint32_t length)
@@ -2458,6 +2575,22 @@ static void encode_binary(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context
     }
 }
 
+static size_t get_encoded_size_binary(uint32_t length)
+{
+    size_t result;
+
+    if (length <= 255)
+    {
+        result = length + 2;
+    }
+    else
+    {
+        result = length + 5;
+    }
+
+    return result;
+}
+
 static void encode_string(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, const char* value)
 {
     size_t length = strlen(value);
@@ -2485,6 +2618,22 @@ static void encode_string(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context
         output_bytes(encoder_output, context, bytes, sizeof(bytes));
         output_bytes(encoder_output, context, value, length);
     }
+}
+
+static size_t get_encoded_size_string(uint32_t length)
+{
+    size_t result;
+
+    if (length <= 255)
+    {
+        result = length + 2;
+    }
+    else
+    {
+        result = length + 5;
+    }
+
+    return result;
 }
 
 static void encode_symbol(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, const char* value)
@@ -2515,6 +2664,22 @@ static void encode_symbol(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context
         /* Codes_SRS_AMQPVALUE_01_122: [Symbols are encoded as ASCII characters [ASCII].] */
         output_bytes(encoder_output, context, value, length);
     }
+}
+
+static size_t get_encoded_size_symbol(uint32_t length)
+{
+    size_t result;
+
+    if (length <= 255)
+    {
+        result = length + 2;
+    }
+    else
+    {
+        result = length + 5;
+    }
+
+    return result;
 }
 
 static int encode_list(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, uint32_t count, AMQP_VALUE* items)
@@ -2610,6 +2775,63 @@ static int encode_list(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, u
                     result = 0;
                 }
             }
+        }
+    }
+
+    return result;
+}
+
+static int get_encoded_size_list(uint32_t count, AMQP_VALUE* items, size_t* encoded_size)
+{
+    int result;
+
+    if (count == 0)
+    {
+        *encoded_size = 1;
+        result = 0;
+    }
+    else
+    {
+        uint32_t i;
+        uint32_t size = 0;
+
+        /* get the size of all items in the list */
+        for (i = 0; i < count; i++)
+        {
+            size_t item_size;
+            if (amqpvalue_get_encoded_size(items[i], &item_size) != 0)
+            {
+                LogError("Could not get encoded size for element %u of the list", (unsigned int)i);
+                break;
+            }
+
+            if ((item_size > UINT32_MAX) ||
+                size + (uint32_t)item_size < size)
+            {
+                LogError("Overflow in list size computation");
+                break;
+            }
+
+            size = (uint32_t)(size + item_size);
+        }
+
+        if (i < count)
+        {
+            /* Codes_SRS_AMQPVALUE_01_274: [When the encoder output function fails, amqpvalue_encode shall fail and return a non-zero value.] */
+            result = __FAILURE__;
+        }
+        else
+        {
+            if ((count <= 255) && (size < 255))
+            {
+                *encoded_size = 3 + size;
+            }
+            else
+            {
+                *encoded_size = 9 + size;
+            }
+
+            result = 0;
         }
     }
 
@@ -2722,6 +2944,73 @@ static int encode_map(AMQPVALUE_ENCODER_OUTPUT encoder_output, void* context, ui
                 result = 0;
             }
         }
+    }
+
+    return result;
+}
+
+static int get_encoded_size_map(uint32_t count, AMQP_MAP_KEY_VALUE_PAIR* pairs, size_t* encoded_size)
+{
+    size_t i;
+    int result;
+
+    uint32_t size = 0;
+
+    /* Codes_SRS_AMQPVALUE_01_124: [Map encodings MUST contain an even number of items (i.e. an equal number of keys and values).] */
+    uint32_t elements = count * 2;
+
+    /* get the size of all items in the list */
+    for (i = 0; i < count; i++)
+    {
+        size_t item_size;
+        if (amqpvalue_get_encoded_size(pairs[i].key, &item_size) != 0)
+        {
+            LogError("Could not get encoded size for key element %u of the map", (unsigned int)i);
+            break;
+        }
+
+        if ((item_size > UINT32_MAX) ||
+            size + (uint32_t)item_size < size)
+        {
+            LogError("Encoded data is more than the max size for a map");
+            break;
+        }
+
+        size = (uint32_t)(size + item_size);
+
+        if (amqpvalue_get_encoded_size(pairs[i].value, &item_size) != 0)
+        {
+            LogError("Could not get encoded size for value element %u of the map", (unsigned int)i);
+            break;
+        }
+
+        if ((item_size > UINT32_MAX) ||
+            size + (uint32_t)item_size < size)
+        {
+            LogError("Encoded data is more than the max size for a map");
+            break;
+        }
+
+        size = (uint32_t)(size + item_size);
+    }
+
+    if (i < count)
+    {
+        /* Codes_SRS_AMQPVALUE_01_274: [When the encoder output function fails, amqpvalue_encode shall fail and return a non-zero value.] */
+        result = __FAILURE__;
+    }
+    else
+    {
+        if ((elements <= 255) && (size < 255))
+        {
+            *encoded_size = 3 + size;
+        }
+        else
+        {
+            *encoded_size = 9 + size;
+        }
+
+        result = 0;
     }
 
     return result;
@@ -2898,8 +3187,128 @@ int amqpvalue_get_encoded_size(AMQP_VALUE value, size_t* encoded_size)
     }
     else
     {
-        *encoded_size = 0;
-        result = amqpvalue_encode(value, count_bytes, encoded_size);
+        switch (value->type)
+        {
+        default:
+            LogError("Invalid type: %d", (int)value->type);
+            result = __FAILURE__;
+            break;
+
+        case AMQP_TYPE_NULL:
+            /* Codes_SRS_AMQPVALUE_01_264: [<encoding code="0x40" category="fixed" width="0" label="the null value"/>] */
+            /* Codes_SRS_AMQPVALUE_01_266: [On success amqpvalue_encode shall return 0.] */
+            *encoded_size = 1;
+            result = 0;
+            break;
+
+        case AMQP_TYPE_BOOL:
+            *encoded_size = 1;
+            result = 0;
+            break;
+
+        case AMQP_TYPE_UBYTE:
+            *encoded_size = get_encoded_size_ubyte();
+            result = 0;
+            break;
+
+        case AMQP_TYPE_USHORT:
+            *encoded_size = get_encoded_size_ushort();
+            result = 0;
+            break;
+
+        case AMQP_TYPE_UINT:
+            *encoded_size = get_encoded_size_uint(value->value.uint_value);
+            result = 0;
+            break;
+
+        case AMQP_TYPE_ULONG:
+            *encoded_size = get_encoded_size_ulong(value->value.ulong_value);
+            result = 0;
+            break;
+
+        case AMQP_TYPE_BYTE:
+            *encoded_size = get_encoded_size_byte();
+            result = 0;
+            break;
+
+        case AMQP_TYPE_SHORT:
+            *encoded_size = get_encoded_size_short();
+            result = 0;
+            break;
+
+        case AMQP_TYPE_INT:
+            *encoded_size = get_encoded_size_int(value->value.int_value);
+            result = 0;
+            break;
+
+        case AMQP_TYPE_LONG:
+            *encoded_size = get_encoded_size_long(value->value.long_value);
+            result = 0;
+            break;
+
+        case AMQP_TYPE_FLOAT:
+            *encoded_size = get_encoded_size_float();
+            result = 0;
+            break;
+
+        case AMQP_TYPE_DOUBLE:
+            *encoded_size = get_encoded_size_double();
+            result = 0;
+            break;
+
+        case AMQP_TYPE_TIMESTAMP:
+            *encoded_size = get_encoded_size_timestamp();
+            result = 0;
+            break;
+
+        case AMQP_TYPE_UUID:
+            *encoded_size = get_encoded_size_uuid();
+            result = 0;
+            break;
+
+        case AMQP_TYPE_BINARY:
+            *encoded_size = get_encoded_size_binary(value->value.binary_value.length);
+            result = 0;
+            break;
+
+        case AMQP_TYPE_STRING:
+            *encoded_size = get_encoded_size_string(strlen(value->value.string_value.chars));
+            result = 0;
+            break;
+
+        case AMQP_TYPE_SYMBOL:
+            *encoded_size = get_encoded_size_symbol(strlen(value->value.symbol_value.chars));
+            result = 0;
+            break;
+
+        case AMQP_TYPE_LIST:
+            result = get_encoded_size_list(value->value.list_value.count, value->value.list_value.items, encoded_size);
+            break;
+
+        case AMQP_TYPE_MAP:
+            result = get_encoded_size_map(value->value.map_value.pair_count, value->value.map_value.pairs, encoded_size);
+            break;
+
+        case AMQP_TYPE_COMPOSITE:
+        case AMQP_TYPE_DESCRIBED:
+        {
+            size_t descriptor_size;
+            size_t described_value_size;
+            if ((amqpvalue_get_encoded_size(value->value.described_value.descriptor, &descriptor_size) != 0) ||
+                (amqpvalue_get_encoded_size(value->value.described_value.value, &described_value_size) != 0))
+            {
+                LogError("Failed encoding described or composite type");
+                result = __FAILURE__;
+            }
+            else
+            {
+                *encoded_size = descriptor_size + described_value_size + 1;
+                result = 0;
+            }
+
+            break;
+        }
+        }
     }
 
     return result;

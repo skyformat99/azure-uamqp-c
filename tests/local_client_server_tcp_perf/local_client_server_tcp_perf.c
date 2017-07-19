@@ -18,8 +18,8 @@
 #include "azure_uamqp_c/messaging.h"
 
 #define CLIENT_COUNT 1
-#define OUTSTANDING_MESSAGE_COUNT 1
-#define TEST_RUNTIME 5000 // ms
+#define OUTSTANDING_MESSAGE_COUNT 10000
+#define TEST_RUNTIME 10000 // ms
 
 static SINGLYLINKEDLIST_HANDLE server_connected_clients;
 static size_t total_messages_received;
