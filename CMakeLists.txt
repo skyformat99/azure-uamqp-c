@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 2.8.11)
 project(uamqp)
 
-set(UAMQP_VERSION 1.0.39)
+set(UAMQP_VERSION 1.0.41)
 
 # Build with -fPIC always
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
@@ -225,6 +225,7 @@ set(uamqp_c_files
     ./src/sasl_anonymous.c
     ./src/sasl_frame_codec.c
     ./src/sasl_mechanism.c
+    ./src/sasl_server_mechanism.c
     ./src/sasl_mssbcbs.c
     ./src/sasl_plain.c
     ./src/saslclientio.c
