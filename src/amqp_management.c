@@ -14,7 +14,6 @@
 #include "azure_uamqp_c/message_sender.h"
 #include "azure_uamqp_c/message_receiver.h"
 #include "azure_uamqp_c/messaging.h"
-#include "azure_uamqp_c/amqpvalue_to_string.h"
 
 static const char sender_suffix[] = "-sender";
 static const char receiver_suffix[] = "-receiver";
@@ -1071,9 +1070,9 @@ int amqp_management_execute_operation_async(AMQP_MANAGEMENT_HANDLE amqp_manageme
                                 else
                                 {
                                     /* Codes_SRS_AMQP_MANAGEMENT_01_088: [ `amqp_management_execute_operation_async` shall send the message by calling `messagesender_send`. ]*/
-                                    if (messagesender_send(amqp_management->message_sender, cloned_message, NULL, NULL) != 0)
+                                    if (messagesender_send_async(amqp_management->message_sender, cloned_message, NULL, NULL, 0) == NULL)
                                     {
-                                        /* Codes_SRS_AMQP_MANAGEMENT_01_089: [ If `messagesender_send` fails, `amqp_management_execute_operation_async` shall fail and return a non-zero value. ]*/
+                                        /* Codes_SRS_AMQP_MANAGEMENT_01_089: [ If `messagesender_send_async` fails, `amqp_management_execute_operation_async` shall fail and return a non-zero value. ]*/
                                         LogError("Could not send request message");
                                         (void)singlylinkedlist_remove(amqp_management->pending_operations, added_item);
                                         free(pending_operation_message);
